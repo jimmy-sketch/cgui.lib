@@ -13,6 +13,7 @@ class string {
 public:
     string();
     string(const char* in);
+    string(const char* first, const char* last);
     string(std::string_view in);
     string(size_t count, char c);
 
@@ -44,9 +45,13 @@ public:
     // 从头开始，获取一个宽度为n的子字符串
     // 如果宽度w处截断了某个UTF-8字符，会把这个字符转化为一些peddingChar，保证宽度w
     string take(size_t w) const;
+    // 从index宽开始，获取一个宽度为n的子字符串
+    string take(size_t index, size_t w) const;
     // 从头开始，获取一个宽度为n的子字符串
     // 如果宽度w处截断了某个UTF-8字符，会补全这个字符，尽管这样会超过宽度w
     string takeComplete(size_t w) const;
+    // 从index宽开始，用other的内容替换this的内容，且保证原宽不变
+    string replace(size_t index, const string& other) const;
 
     // 追加颜色
     void pushBackDefaultRGB();

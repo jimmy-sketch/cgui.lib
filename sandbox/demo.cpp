@@ -63,6 +63,7 @@ int main() {
         printf("\x1B[?25h");
         exit(0);
         });
+    printf("\x1B[?25l");
     initFont();
 
     // 彩虹色
@@ -90,7 +91,8 @@ int main() {
     }
     
     page p;
-    p.set({ 0, 0 }, 
+    auto table = std::make_shared<tContainer>();
+    table->set({ 0, 0 }, 
         std::make_shared<vContainer>(vContainer{
             std::make_shared<hContainer>(hContainer{
                 std::make_shared<basicImage>(getImageByLines("../../asserts/textures/diamond_sword.png")),
@@ -114,14 +116,17 @@ int main() {
                 })
             })
         }));
-    p.set({ 0, 1 }, std::make_shared<vContainer>(vContainer{
-        multiText,
-        std::make_shared<basicImage>(getImageByLines("../../asserts/textures/apple.png"))
+    table->set({ 0, 1 },
+        std::make_shared<vContainer>(vContainer{
+            std::make_shared<basicImage>(getImageByLines("../../asserts/textures/apple.png")),
+            multiText
         }));
 
+    p.set(53, 0, 0, std::make_shared<basicText>("<CGUI DEMO>"));
+    p.set(1, 2, 0, table);
+
     while (true) {
-        p.update();
-        std::this_thread::sleep_for(200ms);
+        p.display();
 
         progressBar->updateProgress(progressBar->getProgress() + 10);
         progressBar1->updateProgress(progressBar1->getProgress() + 10);
@@ -139,6 +144,8 @@ int main() {
             int j = (i + rainbowOffset) % 7;
             (*multiText)[2].setRGB(i, rainbowRad[j], rainbowGreen[j], rainbowBlue[j]);
         }
+
+        std::this_thread::sleep_for(200ms);
     }
     return 0;
 }

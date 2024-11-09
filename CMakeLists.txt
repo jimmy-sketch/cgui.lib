@@ -1,16 +1,17 @@
 cmake_minimum_required(VERSION 3.12)
 
+set(CMAKE_CXX_STANDARD 20)
+
 project(cgui
     LANGUAGES CXX C
     VERSION 1.0.0
 )
 
-set(CMAKE_CXX_STANDARD 20)
-
 add_library(CGUI
     include/cgui/components/basicImage.h
     include/cgui/components/basicProgressBar.h
     include/cgui/components/basicText.h
+    include/cgui/components/canvas.h
     include/cgui/components/component.h
     include/cgui/components/hContainer.h
     include/cgui/components/multiLineText.h
@@ -25,6 +26,7 @@ add_library(CGUI
     src/basicImage.cpp
     src/basicProgressBar.cpp
     src/basicText.cpp
+    src/canvas.cpp
     src/config.cpp
     src/hContainer.cpp
     src/multiLineText.cpp

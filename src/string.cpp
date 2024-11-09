@@ -57,6 +57,14 @@ cgui::string::string(const char* in)
     calculateProperties();
 }
 
+cgui::string::string(const char* first, const char* last)
+    : bytes(first, last)
+{
+    bytes += defaultColor;
+    removeBadChar();
+    calculateProperties();
+}
+
 cgui::string::string(std::string_view in) 
     : string(in.data()) 
 {}
@@ -143,26 +151,17 @@ void cgui::string::eraseDirectly(size_t index, size_t n)
     if (index + n > count) {
         n = count - index;
     }
-    size_t firstPos = 0;
-    size_t lastPos = 0;
     // 找到first字符的位置
     auto it = begin();
-    size_t i = 0;
-    for (; i < index; ) {
-        ++i;
-        ++it;
-    }
-    firstPos = it - begin();
+    for (size_t i = 0; i < index; ++i, ++it);
+    size_t firstPos = it - begin();
     // 找到last字符的位置
-    for (; i < index + n; ) {
+    for (size_t i = 0; i < n; ++i, --count, ++it) {
         if (charWidth(it) != 0) {
             --visibleCharCount;
         }
-        --count;
-        ++i;
-        ++it;
     }
-    lastPos = it - begin();
+    size_t lastPos = it - begin();
     // 清除
     bytes.erase(firstPos, lastPos - firstPos);
 }
@@ -177,7 +176,7 @@ cgui::string cgui::string::take(size_t w) const
         currentWidth += charWidth(it);
     }
     if (currentWidth == w) {
-        return { std::string(begin().p, it.p).data() };
+        return { begin().p, it.p };
     }
     else if (currentWidth > w) {
         currentWidth -= charWidth(last);
@@ -185,6 +184,49 @@ cgui::string cgui::string::take(size_t w) const
     std::string ret(begin().p, last.p);
     ret += std::string(w - currentWidth, cgui::getPaddingChar());
     return { ret.data() };
+}
+
+cgui::string cgui::string::take(size_t index, size_t w) const
+{
+    if (index > getWidth() || w == 0) {
+        return "";
+    }
+    auto it = begin();
+    std::string ret;
+    size_t cW = 0;
+    for (; cW < index; cW += charWidth(it.p), ++it);
+    if (cW > index) {
+        ret = std::string(cW - index, ' ');
+    }
+    auto first = it, last = it;
+    for (cW = 0; (it != end()) && (cW < w); last = it, cW += charWidth(it.p), ++it);
+    if (cW == w) {
+        ret += std::string(first.p, it.p);
+    }
+    else if (cW > w) {
+        ret += std::string(first.p, last.p) + std::string(cW - w, getPaddingChar());
+    }
+    else if (cW < w) {
+        ret += std::string(first.p, it.p) + std::string(w - cW, getPaddingChar());
+    }
+    return ret.data();
+}
+
+cgui::string cgui::string::replace(size_t index, const string& other) const
+{
+    if (index > getWidth()) {
+        return "";
+    }
+    auto width = getWidth();
+    auto otherWidth = other.getWidth();
+    auto before = take(0, index);
+    if (otherWidth + index > width) {
+        return before + other.take(0, width - index);
+    }
+    else {
+        auto after = take(index + otherWidth, width - index - otherWidth);
+        return before + other + after;
+    }
 }
 
 cgui::string cgui::string::takeComplete(size_t w) const
@@ -197,7 +239,7 @@ cgui::string cgui::string::takeComplete(size_t w) const
         currentWidth += charWidth(it);
     }
     if (currentWidth >= w) {
-        return { std::string(begin().p, it.p).data() };
+        return { begin().p, it.p };
     }
     std::string ret(begin().p, last.p);
     ret += std::string(w - currentWidth, cgui::getPaddingChar());
@@ -347,11 +389,10 @@ void cgui::string::__insertRGB(size_t n, const string& other)
     }
     // 找到第n个可见字符的位置
     auto it = begin();
-    for (size_t i = 0; i < n; ) {
+    for (size_t i = 0; i < n; ++it) {
         if (charWidth(it) != 0) {
             ++i;
         }
-        ++it;
     }
     // 跳过后面的彩色转义符
     while (charWidth(it) == 0) {
@@ -371,12 +412,10 @@ void cgui::string::__setRGB(size_t n, const string& other)
     // 找到第n个可见字符的位置
     auto it = begin();
     size_t eraseIndex = 0;
-    for (size_t i = 0; i < n; ) {
+    for (size_t i = 0; i < n; ++it, ++eraseIndex) {
         if (charWidth(it) != 0) {
             ++i;
         }
-        ++eraseIndex;
-        ++it;
     }
     // 跳过后面的彩色转义符
     size_t eraseCount = 0;

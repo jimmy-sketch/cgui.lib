@@ -11,7 +11,7 @@
 - [x] 进度条的显示，更新，自定义样式
 - [ ] 分割线的显示，更新
 - [X] 对组件进行水平，垂直，表格式的排版
-- [ ] 对组件进行自由摆放
+- [X] 对组件进行自由摆放
 
 这当前是一个WIP的项目，请不要随意clone,如要移植, 请使用releases里面公布的代码进行编译, 谢谢！
 欢迎PR、star、发起issue!
@@ -48,6 +48,7 @@ graph LR
         end
         subgraph layout-component
             direction LR
+            canvas
             hContainer
             tContainer
             vContainer

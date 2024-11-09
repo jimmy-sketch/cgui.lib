@@ -5,110 +5,93 @@
 #ifdef _WIN32
 #define NOMINMAX
 #include <windows.h>
-#else
-#include <sys/ioctl.h>  // for winsize, ioctl, TIOCGWINSZ
-#include <unistd.h>     // for STDOUT_FILENO
-#endif
 
 static int terminalWidth() {
-#ifdef _WIN32
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
         return csbi.srWindow.Right - csbi.srWindow.Left + 1;
     }
     return 0;
-#else
-    winsize w{};
-    const int status = ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-    return w.ws_col;
-#endif
 }
-
 static int terminalHeight() {
-#ifdef _WIN32
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
         return csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
     }
     return 0;
+}
+static void terminalClear() {
+    system("cls");
+}
+
 #else
+#include <sys/ioctl.h>  // for winsize, ioctl, TIOCGWINSZ
+#include <unistd.h>     // for STDOUT_FILENO
+
+static int terminalWidth() {
+    winsize w{};
+    const int status = ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+    return w.ws_col;
+}
+static int terminalHeight() {
     winsize w{};
     const int status = ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     return w.ws_row;
-#endif
 }
-
 static void terminalClear() {
-#ifdef _WIN32
-    system("cls");
-#else
     system("clear");
+}
 #endif
+
+int32_t page::getWidth() const
+{
+    return _canvas.getWidth();
 }
 
-size_t page::getWidth() const
+int32_t page::getHeight() const
 {
-    return table.getWidth();
+    return _canvas.getHeight();
 }
 
-size_t page::getHeight() const
+void page::display()
 {
-    return table.getHeight();
-}
-
-std::vector<cgui::string> page::getData() const
-{
-    return table.getData();
-}
-
-std::string page::toString() const
-{
-    std::string ret = "";
-    for (auto& line : getData()) {
-        ret += std::string(line.getData()) + "\n";
-    }
-    return ret;
-}
-
-static int oldWidth = 0;
-static int oldHeight = 0;
-void page::update() const
-{
-    int tWidth = terminalWidth();
-    int tHeight = terminalHeight();
-    if (oldWidth != tWidth || oldHeight != tHeight) {
+    if (_canvas.getWidth() != terminalWidth() || _canvas.getHeight() != terminalHeight()) {
         terminalClear();
-        oldWidth = tWidth;
-        oldHeight = tHeight;
+        _canvas.resize(terminalWidth(), terminalHeight());
     }
 
-    std::string buffer = "";
-    auto data = getData();
-    for (int i = 0; i < tHeight; ++i) {
-        if (i < getHeight()) {
-            buffer += std::string(data[i].take(tWidth).getData());
-        }
-        else {
-            buffer += std::string(tWidth, cgui::getPaddingChar());
-        }
-        if (i + getHeight() < tHeight) {
-            buffer += '\n';
-        }
+    _canvas.clear();
+    for (auto&& [p, c] : components) {
+        _canvas.set(p.col, p.row, c);
     }
-    printf("\x1B[?25l\x1B[0;0H%s", buffer.data());
+
+    printf("\x1B[0;0H");
+    for (auto&& line : _canvas.getData()) {
+        printf("%s", line.getData());
+    }
 }
 
-void page::set(cgui::logicPos pos, std::shared_ptr<component> src)
+void page::set(int32_t x, int32_t y, int32_t z, std::shared_ptr<component> src)
 {
-    table.set(pos, src);
+    components[{ y, x, z }] = src;
 }
 
-void page::erase(cgui::logicPos pos)
+void page::erase(int32_t x, int32_t y, int32_t z)
 {
-    table.erase(pos);
+    components.erase({ y, x, z });
 }
 
 void page::clear()
 {
-    table.clear();
+    components.clear();
+}
+
+std::shared_ptr<component> page::get(int32_t x, int32_t y, int32_t z)
+{
+    return components.at({ x, y, z });
+}
+
+std::shared_ptr<const component> page::get(int32_t x, int32_t y, int32_t z) const
+{
+    return components.at({ x, y, z });
 }
