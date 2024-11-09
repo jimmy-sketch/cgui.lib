@@ -15,8 +15,8 @@ static bool operator==(logicPos lhs, logicPos rhs) {
 
 struct Pos
 {
-    int row, col;
-    int depth;
+    size_t row, col;
+    size_t depth;
 };
 static bool operator<(Pos lhs, Pos rhs) {
     // 深的反而小

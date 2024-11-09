@@ -16,6 +16,7 @@ add_library(CGUI
     include/cgui/components/multiLineText.h
     include/cgui/components/tContainer.h
     include/cgui/components/vContainer.h
+    include/cgui/components/freeCanvas.h
     include/cgui/utils/config.h
     include/cgui/utils/pos.h
     include/cgui/utils/string.h
@@ -26,6 +27,7 @@ add_library(CGUI
     src/basicProgressBar.cpp
     src/basicText.cpp
     src/config.cpp
+    src/freeCanvas.cpp
     src/hContainer.cpp
     src/multiLineText.cpp
     src/page.cpp
