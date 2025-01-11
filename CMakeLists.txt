@@ -20,6 +20,7 @@ add_library(CGUI
     include/cgui/utils/config.h
     include/cgui/utils/pos.h
     include/cgui/utils/string.h
+    include/cgui/utils/utils.h
     include/cgui/page.h
     include/cgui/cgui.h
     thirdparty/src/wtswidth.c
@@ -34,6 +35,7 @@ add_library(CGUI
     src/tContainer.cpp
     src/vContainer.cpp
     src/string.cpp
+    src/utils.cpp
 )
 
 target_include_directories(CGUI PUBLIC
