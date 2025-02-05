@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 project(cgui
     LANGUAGES CXX C
-    VERSION 1.0.0
+    VERSION 1.2.0
 )
 
 add_library(CGUI
@@ -15,6 +15,7 @@ add_library(CGUI
     include/cgui/components/component.h
     include/cgui/components/hContainer.h
     include/cgui/components/multiLineText.h
+    include/cgui/components/scrollText.h
     include/cgui/components/tContainer.h
     include/cgui/components/vContainer.h
     include/cgui/utils/config.h
@@ -34,6 +35,7 @@ add_library(CGUI
     src/page.cpp
     src/tContainer.cpp
     src/vContainer.cpp
+    src/scrollText.cpp
     src/string.cpp
     src/utils.cpp
 )
