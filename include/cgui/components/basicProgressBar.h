@@ -7,8 +7,6 @@ struct progressStyle
 	bool showProgress = true;
 };
 
-//用于自定义样式
-
 class basicProgressBar : public component
 {
 public:

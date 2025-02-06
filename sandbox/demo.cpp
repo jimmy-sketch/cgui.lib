@@ -104,18 +104,18 @@ int main()
     page p;
     auto table = std::make_shared<tContainer>();
     table->set({0, 0},
-        std::make_shared<vContainer>(vContainer{
-            std::make_shared<hContainer>(hContainer{
-                std::make_shared<basicImage>(getImageByLines("../../asserts/textures/diamond_sword.png")),
-                space,
-                std::make_shared<basicImage>(bigChar('C')),
-                space,
-                std::make_shared<basicImage>(bigChar('G')),
-                space,
-                std::make_shared<basicImage>(bigChar('U')),
-                space,
-                std::make_shared<basicImage>(bigChar('I')),
-                space}),
+            std::make_shared<vContainer>(vContainer{
+                std::make_shared<hContainer>(hContainer{
+                    std::make_shared<basicImage>(getImageByLines("../../asserts/textures/diamond_sword.png")),
+                    space,
+                    std::make_shared<basicImage>(bigChar('C')),
+                    space,
+                    std::make_shared<basicImage>(bigChar('G')),
+                    space,
+                    std::make_shared<basicImage>(bigChar('U')),
+                    space,
+                    std::make_shared<basicImage>(bigChar('I')),
+                    space}),
                 std::make_shared<hContainer>(hContainer{
                     std::make_shared<basicText>("progress bars:"),
                     std::make_shared<vContainer>(vContainer{
@@ -124,8 +124,8 @@ int main()
                         progressBar2,
                         progressBar3})})}));
     table->set({0, 1},
-            std::make_shared<vContainer>(vContainer{
-            std::make_shared<basicImage>(getImageByLines("../../asserts/textures/apple.png")),
+        std::make_shared<vContainer>(vContainer{
+        std::make_shared<basicImage>(getImageByLines("../../asserts/textures/apple.png")),
             multiText}));
     table->set({1, 0},
         std::make_shared<vContainer>(vContainer{
@@ -133,7 +133,7 @@ int main()
 
     p.set(53, 0, 0, std::make_shared<basicText>("<CGUI DEMO>"));
     p.set(1, 2, 0, table);
-
+    std::vector<cgui::string> contents = {"字符1字符1字符1字符1", "字符2字符2字符2字符2", "字符3字符3字符3字符3", "字符4字符4字符4字符4", "字符5字符5字符5字符5"};
     while (true)
     {
         p.display();
@@ -156,7 +156,7 @@ int main()
             int j = (i + rainbowOffset) % 7;
             (*multiText)[2].setRGB(i, rainbowRad[j], rainbowGreen[j], rainbowBlue[j]);
         }
-
+        (*randomScrollText).addLine(contents[rainbowOffset % 5]);
         std::this_thread::sleep_for(200ms);
     }
     return 0;

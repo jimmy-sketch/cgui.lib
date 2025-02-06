@@ -34,7 +34,7 @@ std::vector<cgui::string> scrollText::getData() const
         if (tmpLine.getWidth() < this->width)
             tmpLine.append(cgui::string(this->width - tmpLine.getWidth(), cgui::getPaddingChar()));
 
-        tgtRet.emplace_back(tmp.front());
+        tgtRet.emplace_back(tmpLine);
         tmp.pop();
     }
     return tgtRet;
